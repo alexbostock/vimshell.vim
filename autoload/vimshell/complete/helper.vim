@@ -294,11 +294,13 @@ function! vimshell#complete#helper#get_files(path, complete_str) abort "{{{
     let candidates = vimshell#complete#helper#keyword_filter(
           \ candidates, a:complete_str)
   endif
-  return  sort(filter(copy(candidates),
-        \   'v:val.action__is_directory')) +
-        \ sort(filter(copy(candidates),
-        \   '!v:val.action__is_directory'))
-endfunction"}}}
+
+  let directories = copy(candidates)
+  call filter(directories, 'v:val.action__is_directory')
+
+  return  sort(map(directories, 'v:val . "/")) +
+        \ sort(filter(copy(candidates), '!v:val.action__is_directory'))
+endfunction"}}}	
 
 function! s:get_glob_files(path, complete_str) abort "{{{
   let path = ',,' . substitute(a:path, '\.\%(,\|$\)\|,,', '', 'g')
@@ -385,6 +387,6 @@ function! s:get_glob_files(path, complete_str) abort "{{{
   endfor
 
   return candidates
-endfunction"}}}
+endfunction"}}}	
 
 " vim: foldmethod=marker
